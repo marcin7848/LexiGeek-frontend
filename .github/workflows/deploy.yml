@@ -40,15 +40,20 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Setup node
-        id: node
+        id: setup-node
         if: steps.meta.outcome == 'success'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      - name: Install dependencies
+        id: install-dependencies
+        if: steps.setup-node.outcome == 'success'
+        run: npm install
+
       - name: Build and push Docker image
         id: build
-        if: steps.node.outcome == 'success'
+        if: steps.install-dependencies.outcome == 'success'
         uses: docker/build-push-action@v5
         with:
           context: .
