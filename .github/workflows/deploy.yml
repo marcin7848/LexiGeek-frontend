@@ -39,9 +39,16 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Setup node
+        id: node
+        if: steps.meta.outcome == 'success'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Build and push Docker image
         id: build
-        if: steps.meta.outcome == 'success'
+        if: steps.node.outcome == 'success'
         uses: docker/build-push-action@v5
         with:
           context: .
